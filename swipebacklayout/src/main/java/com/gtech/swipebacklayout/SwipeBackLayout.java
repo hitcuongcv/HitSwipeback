@@ -223,7 +223,7 @@ public class SwipeBackLayout extends ViewGroup {
         }
 
         mDragHelper.processTouchEvent(event);
-        return true;
+        return event.getActionMasked() != MotionEvent.ACTION_DOWN;
     }
 
     private void resetTouch() {
