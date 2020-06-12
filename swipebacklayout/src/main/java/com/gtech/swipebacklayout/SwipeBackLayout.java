@@ -196,8 +196,14 @@ public class SwipeBackLayout extends ViewGroup {
                 resetTouch();
                 break;
         }
+
         boolean handled = mDragHelper.shouldInterceptTouchEvent(ev);
-        return handled | super.onInterceptTouchEvent(ev);
+
+        if (ev.getActionMasked() != MotionEvent.ACTION_DOWN) {
+            return handled | super.onInterceptTouchEvent(ev);
+        } else {
+            return false;
+        }
     }
 
     @Override
