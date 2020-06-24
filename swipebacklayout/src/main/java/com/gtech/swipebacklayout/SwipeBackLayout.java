@@ -63,6 +63,8 @@ public class SwipeBackLayout extends ViewGroup {
     private double dragVerticallyMaxAngle = DRAG_VERTICALLY_MAX_ANGLE;
     private int touchedEdge = ViewDragHelper.INVALID_POINTER;
 
+    private float mPrevMoveX = -1;
+
     public SwipeBackLayout(@NonNull Context context) {
         this(context, null);
     }
@@ -166,20 +168,27 @@ public class SwipeBackLayout extends ViewGroup {
                 float distanceX = Math.abs(ev.getRawX() - downX);
                 float distanceY = Math.abs(ev.getRawY() - downY);
                 if (mDirectionMode == FROM_LEFT || mDirectionMode == FROM_RIGHT) {
-                    if (distanceX > mTouchSlop) {
-                        if (distanceY > distanceX * Math.tan(dragHorizontallyMaxAngle)) {
-                            mShouldCancelSwiping = true;
-                            return false;
+                    if (mPrevMoveX > 0) {
+                        if (distanceX > mTouchSlop) {
+                            boolean cancel = (mDirectionMode == FROM_LEFT && ev.getRawX() < downX)
+                                    || (mDirectionMode == FROM_RIGHT && ev.getRawX() > downX);
+                            if (cancel || distanceY > distanceX * Math.tan(dragHorizontallyMaxAngle)) {
+                                mShouldCancelSwiping = true;
+                                return false;
+                            } else {
+                                mIsSwiping = true;
+                                return true;
+                            }
                         } else {
-                            mIsSwiping = true;
-                            return true;
+                            return false;
                         }
-                    } else {
-                        return false;
                     }
+                    mPrevMoveX = ev.getX();
                 } else if (mDirectionMode == FROM_TOP || mDirectionMode == FROM_BOTTOM) {
                     if (distanceY > mTouchSlop) {
-                        if (distanceX > distanceY * Math.tan(dragVerticallyMaxAngle)) {
+                        boolean cancel = (mDirectionMode == FROM_TOP && ev.getRawY() < downY)
+                                || (mDirectionMode == FROM_BOTTOM && ev.getRawY() > downY);
+                        if (cancel || distanceX > distanceY * Math.tan(dragVerticallyMaxAngle)) {
                             mShouldCancelSwiping = true;
                             return false;
                         } else {
@@ -223,6 +232,7 @@ public class SwipeBackLayout extends ViewGroup {
     private void resetTouch() {
         mShouldCancelSwiping = false;
         mIsSwiping = false;
+        mPrevMoveX = -1;
     }
 
     @Override
