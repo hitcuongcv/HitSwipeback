@@ -64,6 +64,7 @@ public class SwipeBackLayout extends ViewGroup {
     private int touchedEdge = ViewDragHelper.INVALID_POINTER;
 
     private float mPrevMoveX = -1;
+    private boolean mCheckInnerScrollView = false;
 
     public SwipeBackLayout(@NonNull Context context) {
         this(context, null);
@@ -90,6 +91,7 @@ public class SwipeBackLayout extends ViewGroup {
         setSwipeBackFactor(a.getFloat(R.styleable.SwipeBackLayout_swipeBackFactor, swipeBackFactor));
         setMaskAlpha(a.getInteger(R.styleable.SwipeBackLayout_maskAlpha, maskAlpha));
         isSwipeFromEdge = a.getBoolean(R.styleable.SwipeBackLayout_isSwipeFromEdge, isSwipeFromEdge);
+        mCheckInnerScrollView = a.getBoolean(R.styleable.SwipeBackLayout_checkInnerScrollView, mCheckInnerScrollView);
         a.recycle();
     }
 
@@ -177,7 +179,10 @@ public class SwipeBackLayout extends ViewGroup {
                                 return false;
                             } else {
                                 mIsSwiping = true;
-                                return true;
+                                boolean checkInnerScrollView = mCheckInnerScrollView &&
+                                        innerScrollView != null &&
+                                        Util.contains(innerScrollView, downX, downY);
+                                return !checkInnerScrollView || super.onInterceptTouchEvent(ev);
                             }
                         } else {
                             return false;

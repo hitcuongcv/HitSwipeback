@@ -4,6 +4,7 @@
         <attr name="swipeBackFactor" format="float" />
         <attr name="maskAlpha" format="integer" />
         <attr name="isSwipeFromEdge" format="boolean" />
+        <attr name="checkInnerScrollView" format="boolean" />
         <attr name="directionMode">
             <enum name="left" value="1" />
             <enum name="right" value="2" />
